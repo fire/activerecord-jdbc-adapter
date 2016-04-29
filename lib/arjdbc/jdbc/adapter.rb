@@ -71,6 +71,11 @@ module ActiveRecord
         end
 
         @config = config.respond_to?(:symbolize_keys) ? config.symbolize_keys : config
+        # FIXME: Rails 5 defaults to prepared statements on and we do not seem
+        # to work yet.  So default to off unless it is requested until that is
+        # fixed.
+        @config[:prepared_statements] = false if ArJdbc::AR50 && !@config[:prepared_statements]
+
 
         if self.class.equal? JdbcAdapter
           spec = @config.key?(:adapter_spec) ? @config[:adapter_spec] :
